@@ -96,6 +96,65 @@ for i, branch in df['Grape_variety_4'].items():
 
 df = df.drop('Grape_variety', axis = 1)
 
+df = df.drop(columns = ['Subregion'])
+df = df.drop(columns = ['Tasting notes'])
+df = df.drop(columns = ['Ingredients'])
+df = df.drop(columns = ['Vintage'])
+df = df.drop(columns = ['Technical analysis'])
+
+
+print('Sugar unique values BEFORE cleaning')
+print(df.Sugar.unique(), end='\n\n')
+
+print('Color unique values BEFORE cleaning')
+print(df.Color.unique(), end='\n\n')
+
+print('DataFrame shape BEFORE cleaning')
+print(df.shape, end='\n\n')
+print('='*32, end='\n\n')
+
+
+rep = {
+    'Rose': 'Pink',
+    'semi-dry': 'Medium Dry', 'semi-sweet': 'Medium Sweet', 'Brut Zero': 'Brut Nature', 'Off Dry': 'Brut'
+}
+
+new_df = pd.DataFrame(columns=df.columns)
+
+for i, line in df.iterrows():
+
+    if isinstance(line['Color'], float) or isinstance(line['Sugar'], float):
+        continue
+
+    color = line['Color']
+    if color in rep:
+        color = rep[color]
+    else:
+        color = color[0].upper() + color[1:]
+    line['Color'] = color
+
+    sugar = line['Sugar'].replace('-', ' ')
+    if sugar in rep:
+        sugar = rep[sugar]
+    else:
+        sugar = sugar.split(' ')
+        sugar = [s[0].upper() + s[1:] for s in sugar]
+        sugar = ' '.join(sugar)
+
+    line['Sugar'] = sugar
+
+    new_df.loc[new_df.shape[0]] = line
+
+print('Sugar unique values AFTER cleaning')
+print(new_df.Sugar.unique(), end='\n\n')
+
+print('Color unique values AFTER cleaning')
+print(new_df.Color.unique(), end='\n\n')
+
+print('DataFrame shape AFTER cleaning')
+print(new_df.shape, end='\n\n')
+
+
 writer = pd.ExcelWriter('new_data.xlsx')
 df.to_excel(writer, index=False)
 writer._save()

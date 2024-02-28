@@ -1,0 +1,101 @@
+import pandas as pd
+import re
+
+df = pd.read_excel('DATABASE.xlsx')
+
+# убираем все строки, где сорта указаны без процентного содержания
+df = df[df['Grape_variety'].str.contains('%', na= False)]
+
+# добавляем колонки 'Grape_variety_' и '% _'
+df.insert(5, 'Grape_variety_1', ['']*14390)
+df.insert(6, '%_1', ['']*14390)
+df.insert(7, 'Grape_variety_2', ['']*14390)
+df.insert(8, '%_2', ['']*14390)
+df.insert(9, 'Grape_variety_3', ['']*14390)
+df.insert(10, '%_3', ['']*14390)
+df.insert(11, 'Grape_variety_4', ['']*14390)
+df.insert(12, '%_4', ['']*14390)
+
+# убираем литры(л) из объема
+for i, line in df['Volume'].items():
+    line = str(line)
+    if line != "nan" and line.endswith('л'):
+        result = line.split('л')[0]
+    else:
+        continue
+
+    df['Volume'] = df['Volume'].replace(line, result)
+
+# убираем % из крепости
+for i, line in df['Wine strength'].items():
+    line = str(line)
+    if line != "nan" and line.endswith('%'):
+        result = line.split('%')[0]
+    else:
+        continue
+
+    df['Wine strength'] = df['Wine strength'].replace(line, result)
+
+# расписываем сорта винограда по разным ячейкам
+for f, string in df['Grape_variety'].items():
+    string = str(string)
+    res = string.split(',')
+    blend = ['', '', '', '']
+    if len(res) < 5:
+        for j, item in enumerate(res):
+            blend[j] = res[j]
+    else:
+        blend = res[:4]
+    df.loc[f, 'Grape_variety_1'] = blend[0]
+    df.loc[f, 'Grape_variety_2'] = blend[1]
+    df.loc[f, 'Grape_variety_3'] = blend[2]
+    df.loc[f, 'Grape_variety_4'] = blend[3]
+
+# делим каждую ячейку с сортом на сорт и его процентное содержание в вине
+
+# Сорт 1
+for i, branch in df['Grape_variety_1'].items():
+    branch = str(branch)
+    percent = branch.split()
+    df.loc[i, '%_1'] = percent[-2]
+    variety = ' '.join(percent[:-2])
+    df['Grape_variety_1'] = df['Grape_variety_1'].replace(branch, variety)
+
+# Сорт 2
+for i, branch in df['Grape_variety_2'].items():
+    branch = str(branch)
+    percent = branch.split()
+    if percent != []:
+        df.loc[i, '%_2'] = percent[-2]
+        variety = ' '.join(percent[:-2])
+        df['Grape_variety_2'] = df['Grape_variety_2'].replace(branch, variety)
+    else:
+        continue
+
+# Сорт 3
+for i, branch in df['Grape_variety_3'].items():
+    branch = str(branch)
+    percent = branch.split()
+    if percent != []:
+        df.loc[i, '%_3'] = percent[-2]
+        variety = ' '.join(percent[:-2])
+        df['Grape_variety_3'] = df['Grape_variety_3'].replace(branch, variety)
+    else:
+        continue
+
+# Сорт 4
+for i, branch in df['Grape_variety_4'].items():
+    branch = str(branch)
+    percent = branch.split()
+    if percent != []:
+        df.loc[i, '%_4'] = percent[-2]
+        variety = ' '.join(percent[:-2])
+        df['Grape_variety_4'] = df['Grape_variety_4'].replace(branch, variety)
+    else:
+        continue
+
+df = df.drop('Grape_variety', axis = 1)
+
+writer = pd.ExcelWriter('new_data.xlsx')
+df.to_excel(writer, index=False)
+writer._save()

@@ -1,0 +1,58 @@
+import pandas as pd
+
+df_1 = pd.read_excel('AbadiaRetuerta.xlsx')
+
+df_2 = pd.read_excel('altavina.xlsx')
+
+df_3 = pd.read_excel('decanter.xlsx')
+
+df_4 = pd.read_excel('joia.xlsx')
+
+df_5 = pd.read_excel('mbgstore.xlsx')
+
+df_6 = pd.read_excel('sabonis.xlsx')
+
+df_7 = pd.read_excel('TheWineShop.xlsx')
+
+df_8 = pd.read_excel('winecellar.xlsx')
+
+df_9 = pd.read_excel('wineexpress.xlsx')
+
+df = pd.DataFrame(columns = ['Name', 'Grape variety 1', '%_1', 'Grape variety 2', '%_2', 'Grape variety 3', '%_3',
+                             'Grape variety 4', '%_4', 'Color', 'Sugar', 'Country', 'Region', 'Subregion',
+                             'Appellation', 'Manufacturer', 'Wine type', 'Wine strength', 'Harvest year', 'Volume',
+                             'Brand', 'Aroma', 'Taste', 'Color spectrum', 'Aftertaste', 'Tasting notes',
+                             'Gastronomic recommendations', 'Wine body', 'Wine aging', 'Type of wine aging',
+                             'Wine serving temperature', 'Description', 'Ingredients', 'Wine production method',
+                             'Wine cork type', 'Type of barrel', 'Vintage', 'Technical analysis', 'Link'])
+
+for i, line in df_1.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_2.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_3.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_4.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_5.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_6.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_7.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_8.iterrows():
+    df.loc[df.shape[0]] = line
+
+for i, line in df_9.iterrows():
+    df.loc[df.shape[0]] = line
+
+writer = pd.ExcelWriter('DATABASE.xlsx')
+df.to_excel(writer, index=False)
+writer._save()
